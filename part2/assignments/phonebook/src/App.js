@@ -1,72 +1,148 @@
-import './App.css';
-import React, { useState,useEffect }from 'react';
-import Numbers from "./components/Numbers"
-import Form from "./components/Form"
-import axios from "axios"
-
-
-
+import "./App.css";
+import React, { useState, useEffect } from "react";
+import Numbers from "./components/Numbers";
+import Form from "./components/Form";
+import personService from "./services/requests";
+import Notif from "./components/Notification";
 
 function App() {
-  const [person, setPerson] = useState([ ])
-  const [displayedList,setDisplayed] = useState(person)
-  const [newName, setNewName] = useState('');
+  const [person, setPerson] = useState([]);
+  const [newName, setNewName] = useState("");
+  const [{ notificationMessage, notificationType }, setNotification] = useState(
+    { notificationMessage: "", notificationType: "none" }
+  );
 
-    useEffect(()=>
-        {
-            axios.get("http://localhost:3001/persons")
-            .then(response=>
-                {
-                    console.log(response.data);
-                    setPerson(response.data); 
-                    setDisplayed(response.data);
-                })
-        },[])
+  useEffect(() => {
+    personService.getPersonsList().then((personList) => {
+      console.log("getting Persons List", personList);
+      setPerson(personList);
+    });
+  }, []);
 
-
-  const [newNumber, setNewNumber] = useState('');
-  const [searchValue, setSearch] = useState(''); 
+  const [newNumber, setNewNumber] = useState("");
+  const [searchValue, setSearch] = useState("");
   const handleChangeName = (event) => {
     setNewName(event.target.value);
-  }
+  };
 
-   
-const handleChangeNumber = (event) => {
+  const handleChangeNumber = (event) => {
     setNewNumber(event.target.value);
-  }
+  };
 
   const newPersonSubmit = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     let exists = 0;
-    for (let i = 0; i < person.length; i++) { if (newName === person[i].name) exists = 1; }
-    if (exists) alert(`${newName} is already added to the phonebook`)
-    else setPerson(person.concat({ name: newName,number:newNumber }));
-    setNewName('');
-    setNewNumber('');
-  }
-  
-  const searchFor = (event) => {
-   
-    setSearch(event.target.value);
-    const newDisplay = person.filter((element) => element.name.toUpperCase().indexOf(searchValue.toUpperCase()) === 0);
-    setSearch(event.target.value);
-    console.log(newDisplay);
-    setDisplayed(newDisplay);
+    let id = -1;
+    for (let i = 0; i < person.length; i++) {
+      if (newName.toUpperCase() === person[i].name.toUpperCase()) {
+        exists = 1;
+        id = person[i].id;
+      }
+    }
 
-  }
+    if (
+      exists &&
+      window.confirm(`do you want to update the number for ${newName}`)
+    ) {
+      personService
+        .editPerson(id, { name: newName, number: newNumber })
+        .then((editedPerson) => {
+          setNotification({
+            notificationMessage: `${editedPerson.name} was updated successfully`,
+            notificationType: "success",
+          });
+          setTimeout(() => {
+            setNotification({
+              notificationMessage: "",
+              notificationType: "none",
+            });
+          }, 6000);
+          return setPerson(
+            person.map((element) =>
+              element.id1 === id ? element : editedPerson
+            )
+          );
+        });
+    } else {
+      const newPerson = { name: newName, number: newNumber };
+
+      personService.addPerson(newPerson).then((newPerson) => {
+        console.log("new Person added", newPerson);
+
+        console.log(person.concat(newPerson));
+        setPerson(person.concat(newPerson));
+        setNotification({
+          notificationMessage: `${newPerson.name} was added successfully`,
+          notificationType: "success",
+        });
+        setTimeout(() => {
+          setNotification({
+            notificationMessage: "",
+            notificationType: "none",
+          });
+        }, 6000);
+
+        setNewName("");
+        setNewNumber("");
+      });
+    }
+  };
+
+  const searchFor = (event) => {
+    setSearch(event.target.value);
+  };
+
+  const deletePerson = (id, name) => {
+    window.confirm(`Do you want to delete  ${name} ?`) &&
+      personService
+        .deletePerson(id)
+        .then((data) => {
+          setPerson(person.filter((element) => element.id !== id));
+        })
+        .catch(() => {
+          setNotification({
+            notificationMessage: `${name} was already deleted from our server `,
+            notificationType: "error",
+          });
+          setTimeout(
+            () =>
+              setNotification({
+                notificationMessage: "",
+                notificationType: "none",
+              }),
+            6000
+          );
+        });
+  };
 
   return (
     <div className="App">
-    <h2>Phonebook</h2>
-    
-    <div className="searchBar">
-          <label for="search">Search</label> <input id="search" type="input/text" value={searchValue} onChange={searchFor}/>
-</div>
-      <Form handleChangeName={handleChangeName} handleChangeNumber={handleChangeNumber} newName={newName} newNumber={newNumber} newPersonSubmit={newPersonSubmit}/>
-         <Numbers person={displayedList}/>
-        </div>
+      <h2>Phonebook</h2>
+
+      <Notif message={notificationMessage} type={notificationType} />
+      <div className="searchBar">
+        <label for="search">Search</label>{" "}
+        <input
+          id="search"
+          type="input/text"
+          value={searchValue}
+          onChange={searchFor}
+        />
+      </div>
+      <Form
+        handleChangeName={handleChangeName}
+        handleChangeNumber={handleChangeNumber}
+        newName={newName}
+        newNumber={newNumber}
+        newPersonSubmit={newPersonSubmit}
+      />
+      <Numbers
+        delete={deletePerson}
+        person={person}
+        searchValue={searchValue}
+      />
+    </div>
   );
 }
-
 
 export default App;
