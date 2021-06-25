@@ -24,7 +24,6 @@ const Numbers = (props) => {
       <h2>Numbers</h2>
       <ul style={ulStyle}>
         {displayedList.map((person) => {
-          console.log(person);
           return (
             <li style={liStyle} key={person.name}>
               {person.name + "   :::    " + person.number}

@@ -16,19 +16,17 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "server": "json-server -p3001 --watch db.json"
   },
+  "proxy":"http://localhost:3001",
   "eslintConfig": {
     "extends": [
-      "react-app",
       "react-app/jest"
     ]
   },
   "browserslist": {
     "production": [
       ">0.2%",
-      "not dead",
       "not op_mini all"
     ],
     "development": [
@@ -39,5 +37,5 @@
   },
   "devDependencies": {
     "json-server": "^0.16.3"
-  }
+}
 }

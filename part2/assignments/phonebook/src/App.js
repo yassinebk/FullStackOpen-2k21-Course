@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     personService.getPersonsList().then((personList) => {
-      console.log("getting Persons List", personList);
+      //console.log("getting Persons List", personList);
       setPerson(personList);
     });
   }, []);
@@ -47,6 +47,12 @@ function App() {
       personService
         .editPerson(id, { name: newName, number: newNumber })
         .then((editedPerson) => {
+          console.log("editedPerson", editedPerson);
+          setPerson(
+            person.map((element) =>
+              element.id === id ? editedPerson : element
+            )
+          );
           setNotification({
             notificationMessage: `${editedPerson.name} was updated successfully`,
             notificationType: "success",
@@ -57,19 +63,15 @@ function App() {
               notificationType: "none",
             });
           }, 6000);
-          return setPerson(
-            person.map((element) =>
-              element.id1 === id ? element : editedPerson
-            )
-          );
+
+          setNewName("");
+          setNewNumber("");
         });
     } else {
       const newPerson = { name: newName, number: newNumber };
 
       personService.addPerson(newPerson).then((newPerson) => {
-        console.log("new Person added", newPerson);
-
-        console.log(person.concat(newPerson));
+        //console.log("new Person added", newPerson);
         setPerson(person.concat(newPerson));
         setNotification({
           notificationMessage: `${newPerson.name} was added successfully`,

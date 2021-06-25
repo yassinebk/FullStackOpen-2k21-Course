@@ -40,6 +40,7 @@ const App = (props) => {
   };
 
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
+  console.log('notes to sho')
   const toggleImportanceOf = (id) => {
 
     const url = `http://localhost:3001/notes/${id}`;
@@ -69,7 +70,8 @@ const App = (props) => {
         </button>
       </div>
       <ul>
-        {notesToShow.map((note) => (
+        {
+          notesToShow.map((note) => (
           <Note
             key={note.id}
             note={note}
