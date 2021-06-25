@@ -70,23 +70,40 @@ function App() {
     } else {
       const newPerson = { name: newName, number: newNumber };
 
-      personService.addPerson(newPerson).then((newPerson) => {
-        //console.log("new Person added", newPerson);
-        setPerson(person.concat(newPerson));
-        setNotification({
-          notificationMessage: `${newPerson.name} was added successfully`,
-          notificationType: "success",
-        });
-        setTimeout(() => {
+      personService
+        .addPerson(newPerson)
+        .then((newPerson) => {
+          //console.log("new Person added", newPerson);
+          setPerson(person.concat(newPerson));
           setNotification({
-            notificationMessage: "",
-            notificationType: "none",
+            notificationMessage: `${newPerson.name} was added successfully`,
+            notificationType: "success",
           });
-        }, 6000);
+          setTimeout(() => {
+            setNotification({
+              notificationMessage: "",
+              notificationType: "none",
+            });
+          }, 6000);
 
-        setNewName("");
-        setNewNumber("");
-      });
+          setNewName("");
+          setNewNumber("");
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+          setNotification({
+            notificationMessage: `${error.response.data.error} `,
+            notificationType: "error",
+          });
+          setTimeout(
+            () =>
+              setNotification({
+                notificationMessage: "",
+                notificationType: "none",
+              }),
+            6000
+          );
+        });
     }
   };
 
