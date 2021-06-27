@@ -1,9 +1,0 @@
-POST http://localhost:3001/api/blogs
-Content-Type: application/json
-
-{
-   "title" :"The Alchemist" , 
-   "author":"Paulo Coleho",
-   "url":"https://en.wikipedia.org/wiki/Paulo_Coelho",
-   "likes":18000
-}
