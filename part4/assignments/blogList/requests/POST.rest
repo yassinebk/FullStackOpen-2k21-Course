@@ -1,0 +1,21 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QiLCJpZCI6IjYwZGFlZDk4NDZkMzVmODY1YTA3NGZkZSIsImlhdCI6MTYyNDk3NTQ1Nn0.nnI6p8aMVgNGKs_qUCdNWVDzjAnQ-QvEXjKNIXHsTg0
+
+{
+   "title" :"Test the new middleware" , 
+   "author":"Paulo Coleho",
+   "url":"https://en.wikipedia.org/wiki/Paulo_Coelho",
+   "likes":18000,
+   "userId": "60daed9846d35f865a074fde"
+}
+
+### 
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+   "username":"new user",
+   "name":"new user",
+   "password":"user"
+}
